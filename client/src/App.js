@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import SimpleStorageContract from "./contracts/SimpleStorage.json";
+import Poll from "./contracts/Poll.json";
 import getWeb3 from "./getWeb3";
 
 import "./App.css";
@@ -18,14 +19,22 @@ class App extends Component {
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
       const deployedNetwork = SimpleStorageContract.networks[networkId];
+
+      const deployedNetworkPoll = Poll.networks[networkId];
+
       const instance = new web3.eth.Contract(
         SimpleStorageContract.abi,
         deployedNetwork && deployedNetwork.address,
       );
 
+      const poll = new web3.eth.Contract(
+        Poll.abi,
+        deployedNetworkPoll && deployedNetworkPoll.address
+      );
+
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance }, this.runExample);
+      this.setState({ web3, accounts, contracts: [instance, poll] }, this.runExample);
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -36,16 +45,19 @@ class App extends Component {
   };
 
   runExample = async () => {
-    const { accounts, contract } = this.state;
+    const { accounts, contracts } = this.state;
 
     // Stores a given value, 5 by default.
-    await contract.methods.set(1000).send({ from: accounts[0] });
+    await contracts[0].methods.set(1000).send({ from: accounts[0] });
 
     // Get the value from the contract to prove it worked.
-    const response = await contract.methods.get().call();
+    const response = await contracts[0].methods.get().call();
+
+    const res = await contracts[1].methods.getTotalCoins().call()
 
     // Update state with the result.
     this.setState({ storageValue: response });
+    this.setState({coins: res})
   };
 
   render() {
@@ -64,7 +76,8 @@ class App extends Component {
         <p>
           Try changing the value stored on <strong>line 42</strong> of App.js.
         </p>
-        <div>The stored value is: {this.state.storageValue}</div>
+        <div>The are {this.state.coins} coins</div>
+        <div>Hello world</div>
       </div>
     );
   }
