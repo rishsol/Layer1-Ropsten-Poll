@@ -2,11 +2,18 @@ import React, { Component } from "react";
 import SimpleStorageContract from "./contracts/SimpleStorage.json";
 import Poll from "./contracts/Poll.json";
 import getWeb3 from "./getWeb3";
-
+import ListGroup from "react-bootstrap/ListGroup";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.css";
 
 class App extends Component {
-  state = { storageValue: 0, web3: null, accounts: null, contract: null };
+  state = {
+    storageValue: 0,
+    web3: null,
+    accounts: null,
+    contract: null,
+    allCoins: null,
+  };
 
   componentDidMount = async () => {
     try {
@@ -24,7 +31,7 @@ class App extends Component {
 
       const instance = new web3.eth.Contract(
         SimpleStorageContract.abi,
-        deployedNetwork && deployedNetwork.address,
+        deployedNetwork && deployedNetwork.address
       );
 
       const poll = new web3.eth.Contract(
@@ -32,53 +39,49 @@ class App extends Component {
         deployedNetworkPoll && deployedNetworkPoll.address
       );
 
+      const res = await poll.methods.getTotalCoins().call();
+
+      let allCoins = {};
+
+      for (var i = 1; i <= res; i++) {
+        let coin = await poll.methods.coins(i).call();
+        allCoins[i] = {
+          id: i,
+          name: coin.name,
+          firstPlaceCount: coin.firstPlaceCount,
+        };
+      }
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contracts: [instance, poll] }, this.runExample);
+      this.setState({
+        web3,
+        accounts,
+        contracts: [instance, poll],
+        coins: res,
+        allCoins: allCoins,
+      });
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`,
+        `Failed to load web3, accounts, or contract. Check console for details.`
       );
       console.error(error);
     }
   };
 
-  runExample = async () => {
-    const { accounts, contracts } = this.state;
-
-    // Stores a given value, 5 by default.
-    await contracts[0].methods.set(1000).send({ from: accounts[0] });
-
-    // Get the value from the contract to prove it worked.
-    const response = await contracts[0].methods.get().call();
-
-    const res = await contracts[1].methods.getTotalCoins().call()
-
-    // Update state with the result.
-    this.setState({ storageValue: response });
-    this.setState({coins: res})
-  };
-
   render() {
-    if (!this.state.web3) {
+    if (!this.state.web3 || !this.state.allCoins) {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
+    const listItems = Object.keys(this.state.allCoins).map((id) => {
+      return <ListGroup.Item key={id}>{this.state.allCoins[id]["name"]}</ListGroup.Item>;
+    });
     return (
-      <div className="App">
-        <h1>Good to Go!</h1>
-        <p>Your Truffle Box is installed and ready.</p>
-        <h2>Smart Contract Example</h2>
-        <p>
-          If your contracts compiled and migrated successfully, below will show
-          a stored value of 5 (by default).
-        </p>
-        <p>
-          Try changing the value stored on <strong>line 42</strong> of App.js.
-        </p>
+      <>
         <div>The are {this.state.coins} coins</div>
         <div>Hello world</div>
-      </div>
+        <ListGroup>{listItems}</ListGroup>
+      </>
     );
   }
 }
