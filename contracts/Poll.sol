@@ -21,7 +21,7 @@ contract Poll {
         uint[] indexed _coinIds
     );
 
-    constructor() public{
+    constructor() public {
         addCoin("BTC");
         addCoin("ETH");
         addCoin("AVAX");
@@ -50,7 +50,7 @@ contract Poll {
         coins[coinIds[1]].secondPlaceCount += 1;
         coins[coinIds[2]].thirdPlaceCount += 1;
 
-        emit rankedEvent(coinIds);
+        //emit rankedEvent(coinIds);
     }
 
 }

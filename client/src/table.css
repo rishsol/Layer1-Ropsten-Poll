@@ -1,0 +1,6 @@
+.table {
+  text-align: center;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
