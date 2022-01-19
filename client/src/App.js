@@ -60,6 +60,32 @@ class App extends Component {
     this.onDragEnd = this.onDragEnd.bind(this);
   }
 
+  compare = (a, b) => {
+    if (a.firstPlaceCount > b.firstPlaceCount) {
+      return -1;
+    }
+
+    if (a.firstPlaceCount < b.firstPlaceCount) {
+      return 1;
+    }
+
+    if (a.secondPlaceCount > b.secondPlaceCount) {
+      return -1;
+    }
+
+    if (a.secondPlaceCount < b.secondPlaceCount) {
+      return 1;
+    }
+
+    if (a.thirdPlaceCount > b.thirdPlaceCount) {
+      return -1;
+    }
+
+    if (a.thirdPlaceCount < b.thirdPlaceCount) {
+      return 1;
+    }
+  }
+
   setCoins = async (totalCoins) => {
     let allCoins = [];
     let coinNames = [];
@@ -74,6 +100,8 @@ class App extends Component {
         thirdPlaceCount: coin.thirdPlaceCount,
       });
     }
+    allCoins.sort(this.compare);
+    console.log(allCoins);
     this.setState({ allCoins: allCoins, coinNames: coinNames });
   };
 
@@ -83,11 +111,10 @@ class App extends Component {
       for (var i = 0; i < list.length; i++) {
         coinIds.push(list[i]["id"]);
       }
-
+     
       await this.state.contracts[1].methods
-        .rank(coinIds)
-        .send({from: this.state.accounts[0]});
-
+          .rank(coinIds)
+          .send({ from: this.state.accounts[0] });
       await this.setCoins(totalCoins);
     } else {
       return;
@@ -136,6 +163,7 @@ class App extends Component {
         Poll.abi,
         deployedNetworkPoll && deployedNetworkPoll.address
       );
+      console.log(poll);
 
       totalCoins = await poll.methods.getTotalCoins().call();
 
