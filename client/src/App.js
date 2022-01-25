@@ -53,6 +53,8 @@ class App extends Component {
     contracts: null,
     allCoins: null,
     coinNames: null,
+    hasVoted: false,
+    voters: [],
   };
 
   constructor(props) {
@@ -77,14 +79,14 @@ class App extends Component {
       return 1;
     }
 
-    if (a.thirdPlaceCount > b.thirdPlaceCount) {
+    if (a.thirdPlaceCount >= b.thirdPlaceCount) {
       return -1;
     }
 
     if (a.thirdPlaceCount < b.thirdPlaceCount) {
       return 1;
     }
-  }
+  };
 
   setCoins = async (totalCoins) => {
     let allCoins = [];
@@ -102,20 +104,23 @@ class App extends Component {
     }
     allCoins.sort(this.compare);
     console.log(allCoins);
-    this.setState({ allCoins: allCoins, coinNames: coinNames });
+    this.setState({ ...this.state, allCoins: allCoins, coinNames: coinNames });
   };
 
   rankCoins = async (list) => {
-    if (this.state.contracts != null) {
+    if (this.state.contracts != null && !this.state.hasVoted) {
       let coinIds = [];
       for (var i = 0; i < list.length; i++) {
         coinIds.push(list[i]["id"]);
       }
-     
+
       await this.state.contracts[1].methods
-          .rank(coinIds)
-          .send({ from: this.state.accounts[0] });
+        .rank(coinIds)
+        .send({ from: this.state.accounts[0] });
       await this.setCoins(totalCoins);
+      let voters = [...this.state.voters];
+      voters.push(this.state.accounts[0]);
+      this.setState({ ...this.state, hasVoted: true, voters: voters });
     } else {
       return;
     }
@@ -133,9 +138,7 @@ class App extends Component {
       result.destination.index
     );
 
-    this.setState({
-      coinNames: coinNames,
-    });
+    this.setState({ ...this.state, coinNames: coinNames });
   }
 
   componentDidMount = async () => {
@@ -168,6 +171,7 @@ class App extends Component {
       totalCoins = await poll.methods.getTotalCoins().call();
 
       this.setState({
+        ...this.state,
         web3,
         accounts,
         contracts: [instance, poll],
@@ -244,6 +248,7 @@ class App extends Component {
         <Button
           className="DND"
           onClick={this.rankCoins.bind(this, this.state.coinNames)}
+          disabled={this.state.hasVoted}
         >
           Rank!
         </Button>
@@ -263,6 +268,21 @@ class App extends Component {
                 <td key={coin.name + "1"}>{coin.firstPlaceCount}</td>
                 <td key={coin.name + "2"}>{coin.secondPlaceCount}</td>
                 <td key={coin.name + "3"}>{coin.thirdPlaceCount}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+
+        <Table responsive className="table">
+          <thead>
+            <tr>
+              <th>Voters</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.voters.map((voter) => (
+              <tr>
+                <td key={voter.toString()}>{voter.toString()}</td>
               </tr>
             ))}
           </tbody>
