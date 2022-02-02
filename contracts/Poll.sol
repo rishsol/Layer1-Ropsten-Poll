@@ -17,6 +17,8 @@ contract Poll {
 
     uint public coinCount;
 
+    address public mostRecentVote;
+
     event rankedEvent (
         uint[] indexed _coinIds
     );
@@ -36,11 +38,16 @@ contract Poll {
         return coinCount;
     }
 
+    function getMostRecentVote() public view returns (address) {
+        return mostRecentVote;
+    }
+
     function rank(uint[] memory coinIds) public {
         require(!voters[msg.sender]);
         require(coinIds.length >= 3);
 
         voters[msg.sender] = true;
+        mostRecentVote = msg.sender;
 
         for (uint i = 0; i < 3; i++) {
             require(i < coinIds.length && coinIds[i] > 0 && coinIds[i] <= coinCount);

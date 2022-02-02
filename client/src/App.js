@@ -126,6 +126,25 @@ class App extends Component {
     }
   };
 
+  setVotingList = async () => {
+    let votingList = [...this.state.voters];
+    if (this.state.contracts != null) {
+      let hasVoted = await this.state.contracts[1].methods
+        .voters(this.state.accounts[0])
+        .call();
+
+      let mostRecentVote = await this.state.contracts[1].methods.getMostRecentVote().call();
+      if (mostRecentVote === null) {
+        votingList = [];
+      } else {
+        votingList.push(mostRecentVote);
+      }
+      //console.log(votingList);
+
+      this.setState({ ...this.state, hasVoted: hasVoted, voters: votingList });
+    }
+  };
+
   onDragEnd(result) {
     // dropped outside the list
     if (!result.destination) {
@@ -179,6 +198,8 @@ class App extends Component {
       });
 
       await this.setCoins(totalCoins);
+
+      await this.setVotingList();
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
     } catch (error) {
