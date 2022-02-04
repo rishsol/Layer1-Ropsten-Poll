@@ -2,26 +2,23 @@
 pragma solidity >=0.4.21 <8.10.0;
 
 contract Poll {
-
     struct Coin {
-        uint id;
+        uint256 id;
         string name;
-        uint firstPlaceCount;
-        uint secondPlaceCount;
-        uint thirdPlaceCount;
+        uint256 firstPlaceCount;
+        uint256 secondPlaceCount;
+        uint256 thirdPlaceCount;
     }
 
     mapping(address => bool) public voters;
 
-    mapping(uint => Coin) public coins;
+    mapping(uint256 => Coin) public coins;
 
-    uint public coinCount;
+    uint256 public coinCount;
 
-    address public mostRecentVote;
+    address[] public voteList;
 
-    event rankedEvent (
-        uint[] indexed _coinIds
-    );
+    event rankedEvent(uint256[] indexed _coinIds);
 
     constructor() public {
         addCoin("BTC");
@@ -34,23 +31,25 @@ contract Poll {
         coins[coinCount] = Coin(coinCount, _name, 0, 0, 0);
     }
 
-    function getTotalCoins() public view returns (uint) {
+    function getTotalCoins() public view returns (uint256) {
         return coinCount;
     }
 
-    function getMostRecentVote() public view returns (address) {
-        return mostRecentVote;
+    function getVoteList() external view returns (address[] memory) {
+        return voteList;
     }
 
-    function rank(uint[] memory coinIds) public {
+    function rank(uint256[] memory coinIds) public {
         require(!voters[msg.sender]);
         require(coinIds.length >= 3);
 
         voters[msg.sender] = true;
-        mostRecentVote = msg.sender;
+        voteList.push(msg.sender);
 
-        for (uint i = 0; i < 3; i++) {
-            require(i < coinIds.length && coinIds[i] > 0 && coinIds[i] <= coinCount);
+        for (uint256 i = 0; i < 3; i++) {
+            require(
+                i < coinIds.length && coinIds[i] > 0 && coinIds[i] <= coinCount
+            );
         }
 
         coins[coinIds[0]].firstPlaceCount += 1;
@@ -59,5 +58,4 @@ contract Poll {
 
         //emit rankedEvent(coinIds);
     }
-
 }

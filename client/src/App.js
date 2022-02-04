@@ -127,17 +127,16 @@ class App extends Component {
   };
 
   setVotingList = async () => {
-    let votingList = [...this.state.voters];
     if (this.state.contracts != null) {
       let hasVoted = await this.state.contracts[1].methods
         .voters(this.state.accounts[0])
         .call();
+      console.log(hasVoted);
 
-      let mostRecentVote = await this.state.contracts[1].methods.getMostRecentVote().call();
-      if (mostRecentVote === null) {
+      let votingList = await this.state.contracts[1].methods.getVoteList().call();
+      console.log(votingList);
+      if (votingList === null) {
         votingList = [];
-      } else {
-        votingList.push(mostRecentVote);
       }
       //console.log(votingList);
 
