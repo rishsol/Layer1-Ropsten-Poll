@@ -10,20 +10,29 @@ contract Poll {
         uint256 thirdPlaceCount;
     }
 
+    struct VotingList {
+        address voter;
+        address nextVoter;
+    }
+
     mapping(address => bool) public voters;
 
     mapping(uint256 => Coin) public coins;
 
     uint256 public coinCount;
 
+    VotingList public voteListLL;
+
     address[] public voteList;
 
-    event rankedEvent(uint256[] indexed _coinIds);
+   // event rankedEvent(uint256[] indexed _coinIds);
 
     constructor() public {
         addCoin("BTC");
         addCoin("ETH");
         addCoin("AVAX");
+
+        //voteListLL = VotingList("null", "null");
     }
 
     function addCoin(string memory _name) private {
@@ -45,6 +54,13 @@ contract Poll {
 
         voters[msg.sender] = true;
         voteList.push(msg.sender);
+
+
+        if (voteListLL.voter == 0x11111111111123) {
+            voteListLL = VotingList(msg.sender, "null");
+        } else {
+            voteListLL = VotingList(msg.sender, voteListLL.voter);
+        }
 
         for (uint256 i = 0; i < 3; i++) {
             require(
