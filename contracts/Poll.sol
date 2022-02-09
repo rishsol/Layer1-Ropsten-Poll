@@ -21,7 +21,7 @@ contract Poll {
 
     uint256 public coinCount;
 
-    VotingList public voteListLL;
+    //VotingList public voteListLL;
 
     address[] public voteList;
 
@@ -56,11 +56,13 @@ contract Poll {
         voteList.push(msg.sender);
 
 
+        /*
         if (voteListLL.voter == 0x11111111111123) {
             voteListLL = VotingList(msg.sender, "null");
         } else {
             voteListLL = VotingList(msg.sender, voteListLL.voter);
         }
+        */
 
         for (uint256 i = 0; i < 3; i++) {
             require(
