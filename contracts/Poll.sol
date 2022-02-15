@@ -25,12 +25,13 @@ contract Poll {
 
     address[] public voteList;
 
-   // event rankedEvent(uint256[] indexed _coinIds);
+    event rankedEvent(address indexed _from);
 
     constructor() public {
         addCoin("BTC");
         addCoin("ETH");
         addCoin("AVAX");
+        addCoin("SOL");
 
         //voteListLL = VotingList("null", "null");
     }
@@ -74,6 +75,6 @@ contract Poll {
         coins[coinIds[1]].secondPlaceCount += 1;
         coins[coinIds[2]].thirdPlaceCount += 1;
 
-        //emit rankedEvent(coinIds);
+        emit rankedEvent(msg.sender);
     }
 }
