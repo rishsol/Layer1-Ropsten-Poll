@@ -14,7 +14,7 @@ contract("Poll", (accounts) => {
 
   it("allows users to rank coins appropriately", async () => {
     await poll
-      .rank([3, 2, 1], { from: accounts[0] })
+      .rank([3, 2, 1, 4], { from: accounts[0] })
       .then(function (instance) {
         return poll.coins(1);
       })

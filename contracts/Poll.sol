@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.21 <8.10.0;
 
+//import "solidity-linked-list/contracts/StructuredLinkedList.sol";
+
 contract Poll {
+    //using StructuredLinkedList for StructuredLinkedList.List;
+
+    //StructuredLinkedList.List list;
+
     struct Coin {
         uint256 id;
         string name;
@@ -32,7 +38,6 @@ contract Poll {
         addCoin("ETH");
         addCoin("AVAX");
         addCoin("SOL");
-
         //voteListLL = VotingList("null", "null");
     }
 
