@@ -4,6 +4,14 @@ contract VoterNode {
     address public name;
     VoterNode public next;
 
+    function getName() public view returns (address) {
+        return name;
+    }
+
+    function getNext() public view returns (VoterNode) {
+        return next;
+    }
+
     function setName(address _name) public {
         name = _name;
     }
@@ -11,21 +19,4 @@ contract VoterNode {
     function setNext(VoterNode _next) public {
         next = _next;
     }
-
-    /*
-    constructor(string memory _name) {
-        name = _name;
-    }
-
-    constructor (string memory _name, VoterNode _next) {
-        name = _name;
-        next = _next;
-    }
-
-    /*
-    constructor(string memory _name, VoterNode _next) {
-        name = _name;
-        next = _next;
-    }
-    */
 }

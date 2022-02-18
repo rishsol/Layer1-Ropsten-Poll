@@ -1,13 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.21 <8.10.0;
 
-//import "solidity-linked-list/contracts/StructuredLinkedList.sol";
+import "./VoterLinkedList.sol";
 
 contract Poll {
-    //using StructuredLinkedList for StructuredLinkedList.List;
-
-    //StructuredLinkedList.List list;
-
     struct Coin {
         uint256 id;
         string name;
@@ -27,9 +23,9 @@ contract Poll {
 
     uint256 public coinCount;
 
-    //VotingList public voteListLL;
-
     address[] public voteList;
+
+    VoterLinkedList public voteLL;
 
     event rankedEvent(address indexed _from);
 
@@ -38,7 +34,6 @@ contract Poll {
         addCoin("ETH");
         addCoin("AVAX");
         addCoin("SOL");
-        //voteListLL = VotingList("null", "null");
     }
 
     function addCoin(string memory _name) private {
@@ -54,6 +49,10 @@ contract Poll {
         return voteList;
     }
 
+    function getVoteLL() external view returns (VoterNode) {
+        return voteLL.getHead();
+    }
+
     function rank(uint256[] memory coinIds) public {
         require(!voters[msg.sender]);
         require(coinIds.length >= 3);
@@ -61,14 +60,7 @@ contract Poll {
         voters[msg.sender] = true;
         voteList.push(msg.sender);
 
-
-        /*
-        if (voteListLL.voter == 0x11111111111123) {
-            voteListLL = VotingList(msg.sender, "null");
-        } else {
-            voteListLL = VotingList(msg.sender, voteListLL.voter);
-        }
-        */
+        voteLL.add(msg.sender);
 
         for (uint256 i = 0; i < 3; i++) {
             require(
