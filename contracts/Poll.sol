@@ -60,7 +60,7 @@ contract Poll {
         voters[msg.sender] = true;
         voteList.push(msg.sender);
 
-        voteLL.add(msg.sender);
+        //voteLL.add(msg.sender);
 
         for (uint256 i = 0; i < 3; i++) {
             require(
