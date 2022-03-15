@@ -34,6 +34,7 @@ contract Poll {
         addCoin("ETH");
         addCoin("AVAX");
         addCoin("SOL");
+        addCoin("LUNA");
     }
 
     function addCoin(string memory _name) private {

@@ -7,14 +7,14 @@ contract("Poll", (accounts) => {
     poll = await Poll.deployed();
   });
 
-  it("initiates polling with 4 coins", async () => {
+  it("initiates polling with 5 coins", async () => {
     const count = await poll.getTotalCoins.call();
-    assert.equal(count, 4, "4 coins not created");
+    assert.equal(count, 5, "5 coins not created");
   });
 
   it("allows users to rank coins appropriately", async () => {
     await poll
-      .rank([3, 2, 1, 4], { from: accounts[0] })
+      .rank([3, 2, 1, 4, 5], { from: accounts[0] })
       .then(function (instance) {
         return poll.coins(1);
       })
